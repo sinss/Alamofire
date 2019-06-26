@@ -55,17 +55,17 @@ open class MultipartFormData {
             case initial, encapsulated, final
         }
 
-        static func generateRandomBytes() -> String? {
+        static func generateRandomBytes() -> String {
             
             var keyData = Data(count: 32)
             let result = keyData.withUnsafeMutableBytes {
-                SecRandomCopyBytes(kSecRandomDefault, 32, $0.baseAddress!)
+                SecRandomCopyBytes(kSecRandomDefault, 32, $0)
             }
             if result == errSecSuccess {
                 return keyData.base64EncodedString()
             } else {
                 print("Problem generating random bytes")
-                return nil
+                return "12345678"
             }
         }
         
