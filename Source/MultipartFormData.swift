@@ -23,7 +23,7 @@
 //
 
 import Foundation
-
+import Security
 #if os(iOS) || os(watchOS) || os(tvOS)
 import MobileCoreServices
 #elseif os(macOS)
@@ -55,8 +55,23 @@ open class MultipartFormData {
             case initial, encapsulated, final
         }
 
+        static func generateRandomBytes() -> String? {
+            
+            var keyData = Data(count: 32)
+            let result = keyData.withUnsafeMutableBytes {
+                SecRandomCopyBytes(kSecRandomDefault, 32, $0.baseAddress!)
+            }
+            if result == errSecSuccess {
+                return keyData.base64EncodedString()
+            } else {
+                print("Problem generating random bytes")
+                return nil
+            }
+        }
+        
         static func randomBoundary() -> String {
-            return String(format: "alamofire.boundary.%08x%08x", arc4random(), arc4random())
+            
+            return String(format: "alamofire.boundary.%08x%08x", generateRandomBytes(), generateRandomBytes())
         }
 
         static func boundaryData(forBoundaryType boundaryType: BoundaryType, boundary: String) -> Data {
